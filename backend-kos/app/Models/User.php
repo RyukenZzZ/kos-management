@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use App\Models\Organization;
 use App\Models\Tenant;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -43,5 +45,15 @@ class User extends Authenticatable
     public function tenant()
     {
         return $this->hasOne(Tenant::class);
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(OrganizationApplication::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'owner' && $this->role === 'owner' && $this->organization()->exists();
     }
 }

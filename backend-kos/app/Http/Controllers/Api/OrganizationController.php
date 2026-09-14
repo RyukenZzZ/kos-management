@@ -38,6 +38,7 @@ class OrganizationController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:150'],
+            'is_accepting_applications' => ['sometimes', 'boolean'],
         ]);
 
         $organization = Organization::create([
@@ -46,6 +47,7 @@ class OrganizationController extends Controller
             'slug' => Str::slug($validated['name']),
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'] ?? null,
+            'is_accepting_applications' => $validated['is_accepting_applications'] ?? true,
         ]);
 
         return response()->json([
@@ -68,6 +70,7 @@ class OrganizationController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:150'],
+            'is_accepting_applications' => ['sometimes', 'boolean'],
         ]);
 
         $organization->update([
@@ -75,6 +78,7 @@ class OrganizationController extends Controller
             'slug' => Str::slug($validated['name']),
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'] ?? null,
+            'is_accepting_applications' => $validated['is_accepting_applications'] ?? $organization->is_accepting_applications,
         ]);
 
         return response()->json([
