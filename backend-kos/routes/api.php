@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\Api\OrganizationApplicationController;
+use App\Http\Controllers\Api\TenantOrganizationController;
 use Illuminate\Http\Request;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -19,6 +21,13 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
     return response()->json([
         'user' => $request->user(),
     ]);
+});
+
+Route::middleware(['auth:sanctum', 'role:tenant'])->group(function () {
+    Route::get('/organizations', [TenantOrganizationController::class, 'index']);
+    Route::get('/organizations/{organization}', [TenantOrganizationController::class, 'show']);
+    Route::get('/tenant/applications', [OrganizationApplicationController::class, 'tenantIndex']);
+    Route::post('/organizations/{organization}/applications', [OrganizationApplicationController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum', 'role:owner'])
@@ -54,16 +63,11 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
         RoomController::class
     );
 
-    Route::get(
-        '/tenant-users/available',
-        [TenantController::class, 'availableUsers']
-    );
+    Route::apiResource('/tenants', TenantController::class)->except(['store']);
 
-    // Tenants
-    Route::apiResource(
-        '/tenants',
-        TenantController::class
-    );
+    Route::get('/organization-applications', [OrganizationApplicationController::class, 'ownerIndex']);
+    Route::post('/organization-applications/{application}/accept', [OrganizationApplicationController::class, 'accept']);
+    Route::post('/organization-applications/{application}/reject', [OrganizationApplicationController::class, 'reject']);
 
      // Contracts
     Route::apiResource(

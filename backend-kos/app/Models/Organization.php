@@ -18,7 +18,15 @@ class Organization extends Model
         'slug',
         'phone',
         'email',
+        'is_accepting_applications',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_accepting_applications' => 'boolean',
+        ];
+    }
 
     public function owner()
     {
@@ -38,5 +46,10 @@ class Organization extends Model
     public function contracts()
     {
         return $this->hasMany(Contract::class);
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(OrganizationApplication::class);
     }
 }
